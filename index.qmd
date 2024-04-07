@@ -1,25 +1,42 @@
 ---
-title: "Poetry"
-subtitle: "Build and publish your first Python package"
-author: "Collegica"
-format:
-  revealjs: 
-    theme: dark
-    slide-number: true
-    chalkboard: 
-      buttons: false
-    preview-links: auto
-    footer: <https://collegi.ca>
+title: "Test"
+subtitle: "Test of a Quarto Reveal.js presentation with a Mermaid.js diagram"
+author: "Niccolò Maltoni"
 editor: visual
 ---
 
-## Quarto
+## Example 1
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+```{mermaid}
+%%| fig-align: center
+classDiagram
+  class Light {
+    on()
+    off()
+    dim()
+  }
+```
 
-## Bullets
+## Example 2
 
-When you click the **Render** button a document will be generated that includes:
+::: columns
+::: {.column width="50%"}
+### Composition
 
--   Content authored with markdown
--   Output from executable code
+```{mermaid}
+classDiagram
+  Car *-- Engine
+```
+:::
+
+::: {.column width="50%"}
+### Inheritance
+
+```{mermaid}
+classDiagram
+  Shape <|-- Circle
+  Shape <|-- Square
+  Shape <|-- Triangle
+```
+:::
+:::

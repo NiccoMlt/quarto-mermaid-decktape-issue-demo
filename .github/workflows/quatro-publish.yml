@@ -1,32 +1,55 @@
-on:
-  push:
-    branches: [master, main]
-  pull_request:
-    branches: [master, main]
-
 name: Render and Publish
 
-jobs:
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
 
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
     steps:
-      - uses: actions/checkout@master
-
-      - name: Set up Quarto
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          # Do not render to PDF
-          tinytex: false
-          # uncomment below and fill to pin a version
-          # version: 0.9.600
-
-      - name: Render Quarto Project
+          node-version: lts/*
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Check versions
+        run: |
+          quarto --version
+          node --version
+          npm --version
+          npx decktape version
+          npx semantic-release --version
+      - name: Render HTML slides with Quarto
         uses: quarto-dev/quarto-actions/render@v2
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Render PDF for slides from Reveal.js HTML with Decktape
+        run: npm run render "index.html" "index.pdf"
+      - name: Release PDF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
+      - name: Publish to GitHub Pages
+        uses: quarto-dev/quarto-actions/publish@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _output
+          target: gh-pages
+          render: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

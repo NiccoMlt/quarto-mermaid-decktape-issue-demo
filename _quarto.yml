@@ -1,2 +1,5 @@
-project:
-  output-dir: _output
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    preview-links: auto
